@@ -1,0 +1,15 @@
+# Sources:
+# The problem : https://superuser.com/questions/1160025/how-to-solve-ttyname-failed-inappropriate-ioctl-for-device-in-vagrant
+# The solution: https://github.com/felixhummel/saltstates/blob/debian9/warts/bash/root_profile#L11
+
+# ~/.profile: executed by Bourne-compatible login shells.
+
+if [ "$BASH" ]; then
+  if [ -f ~/.bashrc ]; then
+    . ~/.bashrc
+  fi
+fi
+
+# get rid of "ttyname failed: Inappropriate ioctl for device"
+# https://superuser.com/a/1277604/182585
+test -t 0 && mesg n
