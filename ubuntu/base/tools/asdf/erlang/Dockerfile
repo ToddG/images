@@ -1,4 +1,4 @@
-FROM envirosoftwaresolutions/ubuntu-asdf:latest
+FROM envirosoftwaresolutions/ubuntu-asdf:__VERSION__
 
 LABEL description="Add Erlang runtime"
 LABEL runtime="erlang"
@@ -12,3 +12,5 @@ RUN asdf install erlang 22.0.4
 
 # set the erlang version globally
 RUN asdf global erlang 22.0.4
+
+ONBUILD RUN erl -version

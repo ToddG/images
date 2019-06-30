@@ -1,4 +1,4 @@
-FROM envirosoftwaresolutions/ubuntu-tools:latest
+FROM envirosoftwaresolutions/ubuntu-tools:__VERSION__
 
 # documentation
 # not installing the actual asdf components, as this is to be done in descendent dockerfiles.
@@ -26,3 +26,5 @@ RUN asdf plugin-add rust 	https://github.com/code-lever/asdf-rust
 RUN asdf plugin-add rebar 	https://github.com/Stratus3D/asdf-rebar
 RUN asdf plugin-add python 	https://github.com/danhper/asdf-python
 RUN asdf plugin-add elixir 	https://github.com/asdf-vm/asdf-elixir
+
+ONBUILD RUN asdf plugin-list

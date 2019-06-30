@@ -4,11 +4,11 @@ all: help
 .PHONY: help
 help: 
 	# -------------------------------------------------------------------------------------------
-	# make version={VERSION} TARGET
+	# make version={VERSION} nocache={true|false} TARGET
 	#
 	# Targets : 
 	#	
-	#	build : 		build all containers
+	#	build : 		build all containers (except ubuntu-base)
 	#	deploy : 		deploy all containers
 	#	ubuntu-base :		build base ubuntu refreshed apt repos, based on 18.04
 	#	ubuntu-tools :		build ubuntu with common tools based on ubuntu-base
@@ -26,41 +26,70 @@ help:
 	#
 	# -------------------------------------------------------------------------------------------
 
+# variables that can be overridden by the command line
+version := 0.0.1
+ubuntu_base_version := 0.0.2
+nocache := false
+
+.PHONY: prune
+prune:	
+	docker system prune -a -f
+
+.PHONY: expand-templates
+expand-templates:
+	rm -rf ./target
+	mkdir target
+	cp -rv ubuntu/ target/
+	find target/ -type f -exec sed -i "s/__VERSION__/$(version)/g" {} \;
+
+.PHONY: test
+test:	expand-templates ubuntu-tools ubuntu-asdf
+
 .PHONY: build
-build:	ubuntu-base ubuntu-tools ubuntu-asdf ubuntu-erlang ubuntu-rebar
+build:	expand-templates ubuntu-tools ubuntu-asdf ubuntu-erlang ubuntu-rebar
+	# building entire tool-chain, except ubuntu-base, which shouldn't need
+	# to be rebuilt. if it does need to be built, then do that manually via
+	# `make version=... nocache=true ubuntu-base` and then build the rest of
+	# the tool-chain.
 
 .PHONY: deploy
-build:	deploy-ubuntu-base deploy-ubuntu-tools deploy-ubuntu-asdf deploy-ubuntu-erlang
+deploy:	deploy-ubuntu-base deploy-ubuntu-tools deploy-ubuntu-asdf deploy-ubuntu-erlang
+	# deploying entire tool-chain
 
 .PHONY: ubuntu-base
 ubuntu-base:
-	cd ubuntu/base && docker build -t envirosoftwaresolutions/ubuntu-base:$(version) .
-	docker tag envirosoftwaresolutions/ubuntu-base:$(version) envirosoftwaresolutions/ubuntu-base:latest
+	# FROM pinned to 18.04
+	cd target/ubuntu/base && docker build -t envirosoftwaresolutions/ubuntu-base:$(ubuntu_base_version) . --no-cache=$(nocache)
+	docker tag envirosoftwaresolutions/ubuntu-base:$(ubuntu_base_version) envirosoftwaresolutions/ubuntu-base:latest
 
 .PHONY: ubuntu-tools
 ubuntu-tools:
-	cd ubuntu/tools && docker build -t envirosoftwaresolutions/ubuntu-tools:$(version) .
+	# FROM pinned to ubuntu-base:0.0.2
+	cd target/ubuntu/base/tools && docker build -t envirosoftwaresolutions/ubuntu-tools:$(version) . --no-cache=$(nocache)
 	docker tag envirosoftwaresolutions/ubuntu-tools:$(version) envirosoftwaresolutions/ubuntu-tools:latest
 
 .PHONY: ubuntu-asdf
-ubuntu-asdf: 
-	cd ubuntu/asdf && docker build -t envirosoftwaresolutions/ubuntu-asdf:$(version) .
+ubuntu-asdf:
+	# FROM templated to __VERSION__
+	cd target/ubuntu/base/tools/asdf && docker build -t envirosoftwaresolutions/ubuntu-asdf:$(version) . --no-cache=$(nocache)
 	docker tag envirosoftwaresolutions/ubuntu-asdf:$(version) envirosoftwaresolutions/ubuntu-asdf:latest
 
 .PHONY: ubuntu-erlang
 ubuntu-erlang: 
-	cd ubuntu/asdf/erlang && docker build -t envirosoftwaresolutions/ubuntu-erlang:$(version) .
+	# FROM templated to __VERSION__
+	cd target/ubuntu/base/tools/asdf/erlang && docker build -t envirosoftwaresolutions/ubuntu-erlang:$(version) . --no-cache=$(nocache)
 	docker tag envirosoftwaresolutions/ubuntu-erlang:$(version) envirosoftwaresolutions/ubuntu-erlang:latest
 
 .PHONY: ubuntu-rebar
 ubuntu-rebar: 
-	cd ubuntu/asdf/rebar && docker build -t envirosoftwaresolutions/ubuntu-rebar:$(version) .
+	# FROM templated to __VERSION__
+	cd target/ubuntu/base/tools/asdf/erlang/rebar && docker build -t envirosoftwaresolutions/ubuntu-rebar:$(version) . --no-cache=$(nocache)
 	docker tag envirosoftwaresolutions/ubuntu-rebar:$(version) envirosoftwaresolutions/ubuntu-rebar:latest
 
 
 .PHONY: deploy_ubuntu-base
 deploy-ubuntu-base: 
-	docker push envirosoftwaresolutions/ubuntu-base:$(version)
+	docker push envirosoftwaresolutions/ubuntu-base:$(ubuntu_base_version)
 	docker push envirosoftwaresolutions/ubuntu-base:latest
 
 .PHONY: deploy_ubuntu-tools

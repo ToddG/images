@@ -42,6 +42,10 @@ RUN apt-get -y install \
 			vim \
 			xsltproc 
 
+ONBUILD RUN uname -a
+
+ENTRYPOINT ["/bin/bash"]
+
 # Notes:
 # 1) Unless there's a really good reason, like a bunch of missing apt  libraries need to be installed, this image can stay the same.
 # 2) The next library in the chain is ../tools and additions can be put there.
