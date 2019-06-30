@@ -30,55 +30,33 @@ help:
 build:	ubuntu-base ubuntu-tools ubuntu-asdf ubuntu-erlang ubuntu-rebar
 
 .PHONY: deploy
-build:	tag-pre-deploy deploy-ubuntu-base deploy-ubuntu-tools deploy-ubuntu-asdf deploy-ubuntu-erlang
+build:	deploy-ubuntu-base deploy-ubuntu-tools deploy-ubuntu-asdf deploy-ubuntu-erlang
 
 .PHONY: ubuntu-base
 ubuntu-base:
-	cd ubuntu/base && docker build -t toddg/ubuntu-base:$(version) .
-	docker tag toddg/ubuntu-base:$(version) toddg/ubuntu-base:latest
+	cd ubuntu/base && docker build -t envirosoftwaresolutions/ubuntu-base:$(version) .
+	docker tag envirosoftwaresolutions/ubuntu-base:$(version) envirosoftwaresolutions/ubuntu-base:latest
 
 .PHONY: ubuntu-tools
 ubuntu-tools:
-	cd ubuntu/tools && docker build -t toddg/ubuntu-tools:$(version) .
-	docker tag toddg/ubuntu-tools:$(version) toddg/ubuntu-tools:latest
+	cd ubuntu/tools && docker build -t envirosoftwaresolutions/ubuntu-tools:$(version) .
+	docker tag envirosoftwaresolutions/ubuntu-tools:$(version) envirosoftwaresolutions/ubuntu-tools:latest
 
 .PHONY: ubuntu-asdf
 ubuntu-asdf: 
-	cd ubuntu/asdf && docker build -t toddg/ubuntu-asdf:$(version) .
-	docker tag toddg/ubuntu-asdf:$(version) toddg/ubuntu-asdf:latest
+	cd ubuntu/asdf && docker build -t envirosoftwaresolutions/ubuntu-asdf:$(version) .
+	docker tag envirosoftwaresolutions/ubuntu-asdf:$(version) envirosoftwaresolutions/ubuntu-asdf:latest
 
 .PHONY: ubuntu-erlang
 ubuntu-erlang: 
-	cd ubuntu/asdf/erlang && docker build -t toddg/ubuntu-erlang:$(version) .
-	docker tag toddg/ubuntu-erlang:$(version) toddg/ubuntu-erlang:latest
+	cd ubuntu/asdf/erlang && docker build -t envirosoftwaresolutions/ubuntu-erlang:$(version) .
+	docker tag envirosoftwaresolutions/ubuntu-erlang:$(version) envirosoftwaresolutions/ubuntu-erlang:latest
 
 .PHONY: ubuntu-rebar
 ubuntu-rebar: 
-	cd ubuntu/asdf/rebar && docker build -t toddg/ubuntu-rebar:$(version) .
-	docker tag toddg/ubuntu-rebar:$(version) toddg/ubuntu-rebar:latest
+	cd ubuntu/asdf/rebar && docker build -t envirosoftwaresolutions/ubuntu-rebar:$(version) .
+	docker tag envirosoftwaresolutions/ubuntu-rebar:$(version) envirosoftwaresolutions/ubuntu-rebar:latest
 
-
-.PHONY: tag-pre-deploy
-tag-pre-deploy:	
-	# ubuntu-base
-	docker tag toddg/ubuntu-base:$(version) envirosoftwaresolutions/ubuntu-base:$(version)
-	docker tag toddg/ubuntu-base:$(version) envirosoftwaresolutions/ubuntu-base:latest
-	#
-	# ubuntu-tools
-	docker tag toddg/ubuntu-tools:$(version) envirosoftwaresolutions/ubuntu-tools:$(version)
-	docker tag toddg/ubuntu-tools:$(version) envirosoftwaresolutions/ubuntu-tools:latest
-	#
-	# ubuntu-asdf
-	docker tag toddg/ubuntu-asdf:$(version) envirosoftwaresolutions/ubuntu-asdf:$(version)
-	docker tag toddg/ubuntu-asdf:$(version) envirosoftwaresolutions/ubuntu-asdf:latest
-	#
-	# ubuntu-erlang
-	docker tag toddg/ubuntu-erlang:$(version) envirosoftwaresolutions/ubuntu-erlang:$(version)
-	docker tag toddg/ubuntu-erlang:$(version) envirosoftwaresolutions/ubuntu-erlang:latest
-	#
-	# ubuntu-rebar
-	docker tag toddg/ubuntu-rebar:$(version) envirosoftwaresolutions/ubuntu-rebar:$(version)
-	docker tag toddg/ubuntu-rebar:$(version) envirosoftwaresolutions/ubuntu-rebar:latest
 
 .PHONY: deploy_ubuntu-base
 deploy-ubuntu-base: 
