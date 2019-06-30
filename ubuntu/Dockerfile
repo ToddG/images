@@ -1,13 +1,12 @@
-# An ubuntu with all the build tools I commonly want available
 FROM ubuntu:18.04
 
+LABEL description="Build tools I commonly want available"
 LABEL maintainer="Todd Greenwood-Geer"
+LABEL company="Enviro Software Solutions, LLC"
+LABEL repo="github.com/toddg/images/"
+LABEL dockerfile="ubuntu/Dockerfile"
 LABEL base_os="ubuntu"
 LABEL base_os_version="18.04"
-#LABEL runtime="erlang"
-#LABEL runtime_version="22.0.4"
-#LABEL application="----"
-#LABEL application_version="----"
 
 # install working tools
 RUN apt-get update

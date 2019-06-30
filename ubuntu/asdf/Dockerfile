@@ -1,4 +1,7 @@
-FROM toddg/ubuntu-tools:18.04
+FROM envirosoftwaresolutions/ubuntu-tools:18.04
+
+LABEL description="ubuntu + asdf"
+LABEL dockerfile="ubuntu/asdf/Dockerfile"
 
 # asdf
 RUN git clone https://github.com/asdf-vm/asdf.git ~/.asdf --branch v0.7.2
